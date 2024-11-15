@@ -5,7 +5,8 @@ let app = express();
 
 let path = require("path");
 
-const port = 5000;
+const port = 5002;
+
 
 app.set("view engine", "ejs");
 
@@ -25,8 +26,14 @@ const knex = require("knex") ({
         port : 5432
     }
 })
+
 app.get("/", (req, res) =>
 {
     res.render("landing_page");
 });
-app.listen(port, () => console.log("Express App has started and server is listening!"))
+
+app.get("/login", (req, res) => {
+    res.render("login");
+});
+
+app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));

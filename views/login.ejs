@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Login</h1>
+            <p>Please enter your credentials to login</p>
+        </header>
+
+        <form>
+            <label for="txtUserName">User Name:</label>
+            <input type="text" id="txtUserName" required>
+
+            <label for="txtPassword">Password:</label>
+            <input type="password" id="txtPassword" required>
+            
+            <div class="button-group">
+                <button type="button" id="btnShow" class="btn" onclick="togglePassword();">Show</button>
+                <button type="button" class="btn" onclick="displayPassword();">Submit</button>
+            </div>
+        </form>
+        
+        <p id="myOutput"></p>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Baby Health Tracker | Helping parents give the best care</p>
+    </footer>
+
+    <script>
+        var bShow = false;
+
+        function togglePassword() {
+            if (!bShow) {
+                bShow = true;
+                document.getElementById("txtPassword").setAttribute("type", "text");
+                document.getElementById("btnShow").innerHTML = "Hide";
+            } else {
+                bShow = false;
+                document.getElementById("txtPassword").setAttribute("type", "password");
+                document.getElementById("btnShow").innerHTML = "Show";
+            }
+        }
+
+        function displayPassword() {
+            var userName = document.getElementById("txtUserName").value;
+            var password = document.getElementById("txtPassword").value;
+            document.getElementById("myOutput").textContent = "User Name: " + userName + ", Password: " + password;
+        }
+    </script>
+</body>
+</html>
