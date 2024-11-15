@@ -39,6 +39,13 @@ header p {
 }
 
   /* Button Styles */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Space between buttons */
+    margin-top: 20px; /* Adds some space above the button group */
+}
+
 .btn {
     background-color: #4a90e2;
     color: #fff;
@@ -48,6 +55,7 @@ header p {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    text-decoration: none;
 }
 
 .btn:hover {
