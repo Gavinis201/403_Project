@@ -1,11 +1,20 @@
 
 let express = require("express");
+
 let app = express();
+
 let path = require("path");
+
 const port = 5000;
+
 app.set("view engine", "ejs");
+
 app.set("views", path.join(__dirname, "views"));
+
 app.use(express.urlencoded({extended: true}));
+
+app.use(express.static('public'));
+
 const knex = require("knex") ({
     client : "pg",
     connection : {
@@ -18,11 +27,6 @@ const knex = require("knex") ({
 })
 app.get("/", (req, res) =>
 {
-    knex.select().from('pokemon').orderBy('description').then( pokes => {
-        res.render("index", { pokemon: pokes });
-    }).catch(err => {
-        console.log(err);
-        res.status(500).json({err});
-    });
+    res.render("landing_page");
 });
 app.listen(port, () => console.log("Express App has started and server is listening!"))
