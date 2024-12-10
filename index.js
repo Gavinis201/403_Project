@@ -4,17 +4,13 @@ let express = require("express");
 let app = express();
 
 let path = require("path");
-
-const port = 5002;
-
+const port = 5000;
 
 app.set("view engine", "ejs");
 
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({extended: true}));
-
-app.use(express.static('public'));
 
 const knex = require("knex") ({
     client : "pg",
@@ -33,6 +29,14 @@ app.get("/", (req, res) =>
 });
 
 app.get("/login", (req, res) => {
+    res.render("login");
+});
+
+app.get("/", (req, res) => {
+    res.send("Welcome to the Home Page!");
+});
+
+app.get("/Login", (req, res) => {
     res.render("login");
 });
 
