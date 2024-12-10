@@ -14,6 +14,8 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({extended: true}));
 
+app.use(express.static(path.join(__dirname, "public") ));
+
 
 const knex = require("knex") ({
     client : "pg",
@@ -36,13 +38,6 @@ app.get("/login", (req, res) => {
     res.render("login");
 });
 
-app.get("/", (req, res) => {
-    res.send("Welcome to the Home Page!");
-});
-
-app.get("/Login", (req, res) => {
-    res.render("login");
-});
 
 // Route to populate add Log dropdown
 app.get('/addLog', (req, res) => {
@@ -61,27 +56,67 @@ app.get('/addLog', (req, res) => {
     });
 });
 
-// Route to Create new log
+  // Route to Add new Log
 app.post('/addLog', (req, res) => {
     // Extract form values from req.body
-    const activity = req.body.activity; // Default to empty string if not provided; 
-    const date = req.body.date; 
-    const notes = req.body.notes || ''; // Default to empty string if not provided
+    const activity_id  = req.body.activity_id ; // Default to empty string if not provided; 
+    const activity_date  = req.body.activity_date ; 
+    const activity_notes  = req.body.notactivity_notes || ''; // Default to empty string if not provided
   
-    // Insert the new log into the database
-    knex('BabyLog')
+    // Insert the new volunteer into the database
+    knex('baby_log')
       .insert({
-       activity,
-       date,
-       notes
+       activity_id,
+       activity_date,
+       activity_notes 
       })
       .then(() => {
-          res.redirect('/viewbabyLog'); // Redirect to the Home Baby Log page after adding
+          res.redirect('/viewbabyLog'); // Redirect to the Home view page after adding
       })
       .catch(error => {
           console.error('Error adding Log', error);
           res.status(500).send('Internal Server Error');
       });
  });
+
+ // Route to new user
+ app.get('/addUser', (req, res) => {
+    res.render('addUser', {error: "Passwords do not match. Please try again.", formSubmitted: false});
+  });
+
+// Route to Create new user
+  app.post('/addUser', async (req, res) => {
+    const username = req.body.username;
+    const acc_first_name = req.body.acc_first_name;
+    const acc_last_name  = req.body.acc_last_name ;
+    const baby_name  = req.body.baby_name ;
+    const password = req.body.password
+    const confirm_password = req.body.confirm_password
+
+    // checks to see if passwords match
+    if (password !== confirm_password) {
+      return res.status(400).render('newUser', { 
+        user: {  
+          username
+        },
+        error: "Passwords do not match. Please try again.",
+        formSubmitted: true
+      });
+    }
+
+    // adds the new user record to the database
+    await knex('accounts').insert({ 
+      username: username, 
+      acc_first_name: acc_first_name,
+      acc_last_name : acc_last_name ,
+      baby_name : baby_name ,
+      password: password })
+      .then(() => {
+    res.redirect('/landing_page')
+    })
+    .catch (error => {
+        console.error("Error adding user:", error);
+  })
+});
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
