@@ -6,11 +6,6 @@
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
     color: #333;
@@ -139,6 +134,15 @@ nav {
 
 .btn:hover {
     background-color: #357ABD;
+}
+
+.login_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    
 }
 
 /* Form Styles */
