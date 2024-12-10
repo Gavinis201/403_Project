@@ -1,4 +1,3 @@
-
 let express = require("express");
 
 let app = express();
@@ -12,13 +11,14 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({extended: true}));
 
+
 const knex = require("knex") ({
     client : "pg",
     connection : {
         host : "localhost",
-        user : "postgres",
-        password : "admin",
-        database : "mycompany", 
+        user : "testuser",
+        password : "test",
+        database : "assignment 3a",
         port : 5432
     }
 })
