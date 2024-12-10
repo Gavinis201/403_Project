@@ -6,24 +6,35 @@
 }
 
 body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
+    background-color: #f4f4f9;
     color: #333;
     line-height: 1.6;
 }
 
-  /* Main Container */
+/* Main Container */
 .container {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-  /* Header */
+/* Header */
 header {
     text-align: center;
-    padding: 2rem 0;
+    width: 100%;
+    padding: 1rem 0;
     color: #4a90e2;
 }
 
@@ -38,19 +49,19 @@ header p {
     color: #777;
 }
 
-  /* Button Styles */
+/* Button Styles */
 .button-group {
     display: flex;
     justify-content: center;
-    gap: 10px; /* Space between buttons */
-    margin-top: 20px; /* Adds some space above the button group */
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .btn {
     background-color: #4a90e2;
     color: #fff;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+    font-size: 12pt;
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -62,7 +73,7 @@ header p {
     background-color: #357ABD;
 }
 
-  /* Form Styles */
+/* Form Styles */
 form {
     background-color: #fff;
     padding: 2rem;
@@ -97,7 +108,7 @@ form select:focus {
     border-color: #4a90e2;
 }
 
-  /* Landing Page Styles */
+/* Landing Page Styles */
 .landing-section {
     display: flex;
     align-items: center;
@@ -120,14 +131,72 @@ form select:focus {
     margin-bottom: 2rem;
 }
 
-  /* Footer */
+/* Footer */
 footer {
     text-align: center;
     padding: 1.5rem 0;
     background-color: #4a90e2;
     color: #fff;
+    margin-top: auto;
+    width: 100%;
 }
 
 footer p {
     font-size: 0.9rem;
 }
+
+/* Fieldset */
+fieldset {
+    width: 100%;
+    max-width: 320px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+label {
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+    background-color: #4a90e2;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+
+
+button:hover {
+    background-color: #007acc;
+}
+
+
+
+

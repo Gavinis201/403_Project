@@ -4,94 +4,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login Page</title>
+        <link rel="stylesheet" href="/styles.css">
         <style>
             /* Basic reset */
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
-
-            /* Center content vertically and horizontally */
-            body {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f9;
-                color: #333;
-            }
-
-            /* Styling the login form */
-            fieldset {
-                width: 100%;
-                max-width: 320px;
-                padding: 20px;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                background-color: #fff;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            }
-
-            legend {
-                font-size: 1.2em;
-                font-weight: bold;
-                color: #4a4a4a;
-                margin-bottom: 10px;
-            }
-
-            label {
-                font-weight: bold;
-                color: #555;
-            }
-
-            input[type="text"],
-            input[type="password"] {
-                width: 100%;
-                padding: 10px;
-                margin: 8px 0;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
-
-            button {
-                padding: 10px 15px;
-                margin-top: 10px;
-                width: 100%;
-                border: none;
-                border-radius: 4px;
-                background-color: #4da6ff; /* Light blue color */
-                color: #fff;
-                font-size: 1em;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-
-            button#btnShow {
-                background-color: #888;
-                margin-top: 0;
-                width: auto;
-            }
-
-            button:hover {
-                background-color: #007acc; /* Darker blue on hover */
-            }
-
-            button#btnShow:hover {
-                background-color: #555;
-            }
-
-            /* Output message styling */
-            #myOutput {
-                text-align: center;
-                margin-top: 20px;
-                color: #4a4a4a;
-            }
+            
         </style>
     </head>
     <body>
-        <fieldset>
             <legend>Login</legend>
             <form>
                 <label for="txtUserName">User Name:</label>
@@ -99,11 +18,10 @@
 
                 <label for="txtPassword">Password:</label>
                 <input type="password" id="txtPassword" required>
-                <button type="button" id="btnShow" onclick="togglePassword();">Show</button>
+                <button type="button" class="button" id="btn" onclick="togglePassword();">Show</button>
 
-                <button type="button" onclick="displayPassword();">Submit</button>
+                <button type="button" class="button" onclick="displayPassword();">Submit</button>
             </form>
-        </fieldset>
         <p id="myOutput"></p>
         
         <script>
@@ -113,11 +31,9 @@
                 if (!bShow) {
                     bShow = true;
                     document.getElementById("txtPassword").setAttribute("type", "text");
-                    document.getElementById("btnShow").innerHTML = "Hide";
                 } else {
                     bShow = false;
                     document.getElementById("txtPassword").setAttribute("type", "password");
-                    document.getElementById("btnShow").innerHTML = "Show";
                 }
             }
         </script>
