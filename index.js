@@ -4,7 +4,9 @@ let app = express();
 
 let path = require("path");
 
-const port = 3000;
+
+const port = process.env.PORT || 3000;
+
 
 app.set("view engine", "ejs");
 
@@ -18,11 +20,12 @@ app.use(express.static(path.join(__dirname, "public") ));
 const knex = require("knex") ({
     client : "pg",
     connection : {
-        host : "localhost",
-        user : "testuser",
-        password : "test",
-        database : "assignment3a",
-        port : 5432
+        host : process.env.RDS_HOSTNAME || "localhost",
+        user : process.env.RDS_USERNAME || "testuser",
+        password : process.env.RDS_PASSWORD || "test",
+        database : process.env.RDS_DB_NAME || "assignment 3a",
+        port : process.env.RDS_PORT || 5432,
+        ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
 })
 
