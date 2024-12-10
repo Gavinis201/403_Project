@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+    .container {
+        flex: 1;
+    }
+    footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+        margin-top: auto;
+    }
+    footer a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+    footer a:hover {
+        text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+      <div class="container d-flex justify-content-between align-items-center">
+        <!-- Turtle Shelter Project on the far left -->
+        <a class="navbar-brand" href="/">Baby Health Tracker</a>
+      </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container mt-5">
+    <h1 class="mb-4">Add New User</h1>
+    <form action="/addUser" method="POST">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" name="username" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="confirm_password" class="form-label">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="acc_first_name" class="form-label">First Name</label>
+        <input type="email" id="acc_first_name" name="acc_first_name" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="acc_last_name" class="form-label">Last Name</label>
+        <input type="password" id="acc_last_name" name="acc_last_name" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="baby_name " class="form-label">Baby Name</label>
+        <input type="password" id="baby_name " name="baby_name " class="form-control" required>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save User</button>
+        <a href="/" class="btn btn-secondary">Cancel</a>
+      </div> 
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2023 Baby Health Tracker | Helping parents give the best care</p>
+</footer>
+
+</body>
+</html>
