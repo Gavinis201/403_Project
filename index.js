@@ -238,7 +238,7 @@ app.get('/babyLog', authenticateUser, (req, res) => {
         query = query.andWhere('baby_log.activity_date', '<=', endDate);
     }
 
-    query.orderBy('baby_log.activity_date', 'asc')
+    query.orderBy('baby_log.activity_date', 'desc')
         .then(logs => {
             // Fetch distinct activities for the filter dropdown
             return knex('activities').distinct('activity_description').then(activities => {
