@@ -145,7 +145,7 @@ textarea:focus {
 
             <div class="form-group">
                 <label for="date">Date:</label>
-                <input type="date" id="date" name="date" required>
+                <input type="date" id="date" name="date" value="<%= new Date(localDate).toISOString().slice(0, 10) %>" required>
             </div>
             
             <div class="form-group">

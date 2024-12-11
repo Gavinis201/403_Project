@@ -88,7 +88,14 @@ app.get('/addLog', (req, res) => {
       .select('activity_id', 'activity_description')
       .then(activity_types => {
             // Render the add form with the activity type
-            res.render('addLog', { activity_types });
+            const currentDate = new Date();
+            const localDate = currentDate.toLocaleDateString('en-US', {
+              timeZone: 'America/Denver', // Utah's time zone
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
+          });
+            res.render('addLog', { activity_types, localDate });
         })
 
         .catch(error => {
