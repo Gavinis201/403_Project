@@ -81,14 +81,22 @@ app.post('/login', async (req, res) => {
 
 
 // Route to populate add Log dropdown
-app.get('/addLog', (req, res) => {
+app.get('/addLog/:user_id', (req, res) => {
     const { success } = req.query; 
+    const user_id = req.params.user_id;
     // Fetch types to populate the dropdown
     knex('activities')
       .select('activity_id', 'activity_description')
       .then(activity_types => {
             // Render the add form with the activity type
-            res.render('addLog', { activity_types });
+            const currentDate = new Date();
+            const localDate = currentDate.toLocaleDateString('en-US', {
+              timeZone: 'America/Denver', // Utah's time zone
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
+          });
+            res.render('addLog', { activity_types, localDate, user_id });
         })
 
         .catch(error => {
@@ -98,21 +106,25 @@ app.get('/addLog', (req, res) => {
 });
 
   // Route to Add new Log
-app.post('/addLog', (req, res) => {
+app.post('/addLog/:user_id', (req, res) => {
     // Extract form values from req.body
     const activity_id  = req.body.activity_id ; // Default to empty string if not provided; 
     const activity_date  = req.body.activity_date ; 
-    const activity_notes  = req.body.notactivity_notes || ''; // Default to empty string if not provided
+    const activity_notes  = req.body.activity_notes || ''; // Default to empty string if not provided
+    const user_id = req.params.user_id;
+
+    console.log(activity_id, activity_date, activity_notes, user_id);
   
     // Insert the new volunteer into the database
     knex('baby_log')
       .insert({
-       activity_id,
-       activity_date,
-       activity_notes 
+       user_id: user_id,
+       activity_id: activity_id,
+       activity_date: activity_date,
+       activity_notes: activity_notes
       })
       .then(() => {
-          res.redirect('/viewbabyLog'); // Redirect to the Home view page after adding
+          res.redirect(`/babyLog/${user_id}`); // Redirect to the Home view page after adding
       })
       .catch(error => {
           console.error('Error adding Log', error);
@@ -177,7 +189,7 @@ app.get('/babyLog/:user_id', (req, res) => {
               }).format(new Date(log.activity_date))
           }));
 
-          res.render('babyLog', { logs: formattedLogs });
+          res.render('babyLog', { logs: formattedLogs, user_id });
         })
         .catch(error => {
             console.error('Error fetching logs:', error);
