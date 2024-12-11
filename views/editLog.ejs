@@ -112,31 +112,26 @@
     </header>
     <main>
         <h1 style="padding-bottom: 10px;">Edit Record</h1>
-        <form action="/editLog/<%= log.log_id %>" method="POST">
-            <div class="form-group">
-                <label for="activity_description">Activity:</label>
-                <select id="activity_id" name="activity_id" required>
-                    <% activities.forEach(activity => { %>
-                        <option value="<%= activity.activity_id %>" 
-                            <%= activity.activity_description === log.activity_description ? 'selected' : '' %>>
-                            <%= activity.activity_description %>
-                        </option>
-                    <% }) %>
-                </select>
-            </div>
-
-            <div class="form-group" style="padding-bottom: 20px;">
-                <label for="activity_date">Date:</label>
-                <input type="date" id="activity_date" name="activity_date" value="<%= new Date(log.activity_date).toISOString().slice(0, 10) %>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="activity_notes">Notes:</label>
-                <textarea id="activity_notes" name="activity_notes" value="<%= log.activity_notes %>" required><%= log.activity_notes %></textarea>
-            </div>
-
+        <form action="/editLog/<%= logId %>" method="POST">
+            <label for="activity_id">Activity:</label>
+            <select name="activity_id" id="activity_id">
+              <% activities.forEach(activity => { %>
+                <option value="<%= activity.activity_id %>" <%= activity.activity_id === log.activity_id ? 'selected' : '' %> >
+                  <%= activity.activity_description %>
+                </option>
+              <% }); %>
+            </select>
+          
+            <label for="activity_date">Date:</label>
+            <input type="date" name="activity_date" value="<%= log.activity_date %>">
+          
+            <label for="activity_notes">Notes:</label>
+            <textarea name="activity_notes"><%= log.activity_notes %></textarea>
+          
             <button type="submit">Save Changes</button>
-        </form>
+          </form>
+          
+        
 
         <a href="/babyLog/<%= logId %>" style="display: block; margin: 1rem auto; text-align: center; text-decoration: none;">Cancel</a>
 

@@ -21,9 +21,9 @@ const knex = require("knex") ({
     client : "pg",
     connection : {
         host : process.env.RDS_HOSTNAME || "localhost",
-        user : process.env.RDS_USERNAME || "intex",
-        password : process.env.RDS_PASSWORD || "password",
-        database : process.env.RDS_DB_NAME || "project_3_v2",
+        user : process.env.RDS_USERNAME || "postgres",
+        password : process.env.RDS_PASSWORD || "Gavin12",
+        database : process.env.RDS_DB_NAME || "baby",
         port : process.env.RDS_PORT || 5432,
         // ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
@@ -256,5 +256,32 @@ app.post('/editLog/:id', (req, res) => {
                 });
         })
 
+//Route to delete log
+app.post("/deleteLog/:log_id", (req, res) => {
+  const log_id = req.params.log_id;  
+
+  knex("baby_log")
+    .where("log_id", log_id)
+    .select("user_id") // We only need the user_id
+    .first() // Get the first (and only) result
+    .then(log => {
+      if (!log) {
+        console.error("Log not found for log_id:", log_id);
+        return res.status(404).json({ error: "Log not found" });
+      }
+
+      //Delete the log
+      return knex("baby_log")
+        .where("log_id", log_id)
+        .del()
+        .then(() => {
+          res.redirect(`/babyLog/${log.user_id}`);
+        });
+    })
+    .catch(err => {
+      console.error("Error deleting Log:", err);
+      res.status(500).json({ error: "Unable to delete the log. Please try again." });
+    });
+});
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
