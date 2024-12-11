@@ -27,6 +27,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    height: 78vh;
 }
 
 /* Header */
@@ -205,12 +206,14 @@ form select:focus {
 
 /* Footer */
 footer {
+    position: relative;
     text-align: center;
     padding: 1.5rem 0;
     background-color: #4a90e2;
     color: #fff;
     margin-top: auto;
     width: 100%;
+    z-index: 1;
 }
 
 footer p {
