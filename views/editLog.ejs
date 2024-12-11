@@ -115,7 +115,7 @@
         <form action="/editLog/<%= log.log_id %>" method="POST">
             <div class="form-group">
                 <label for="activity_description">Activity:</label>
-                <select id="activity_description" name="activity_description" required>
+                <select id="activity_id" name="activity_id" required>
                     <% activities.forEach(activity => { %>
                         <option value="<%= activity.activity_id %>" 
                             <%= activity.activity_description === log.activity_description ? 'selected' : '' %>>
@@ -132,7 +132,7 @@
 
             <div class="form-group">
                 <label for="activity_notes">Notes:</label>
-                <textarea id="activity_notes" name="activity_notes" value="<%= log.activity_notes %>" required></textarea>
+                <textarea id="activity_notes" name="activity_notes" value="<%= log.activity_notes %>" required><%= log.activity_notes %></textarea>
             </div>
 
             <button type="submit">Save Changes</button>
