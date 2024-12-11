@@ -35,16 +35,50 @@ app.get("/", (req, res) =>
 });
 
 app.get("/login", (req, res) => {
-    res.render("login");
+  const error = req.query.error;
+  security = false;
+  res.render("login", { error });
 });
 
-app.get("/", (req, res) => {
-    res.send("Welcome to the Home Page!");
+// Route to login to administrator side
+// Compares username and password
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  // Check for missing fields
+  if (!username || !password) {
+    return res.status(400).send('Username and password are required. Why though?');
+  }
+
+  try {
+    // Fetch the user by username
+    const user = await knex('accounts')
+      .select('*')
+      .where({ username })
+      .first(); // Fetch the first matching record
+
+    if (!user) {
+      // If no matching user is found
+      console.log('No user found with username:', username);
+      return res.redirect('/login?error=invalid_credentials');
+    }
+
+    if (password === user.password) {
+      // Passwords match
+      console.log('Login was successful');
+      return res.redirect('/view');
+    } else {
+      // Passwords don't match
+      console.log('Password does not match user', username);
+      return res.redirect('/login?error=invalid_credentials');
+    }
+  } catch (error) {
+    // Handle any errors during the database query or password comparison
+    console.error('Error during login:', error.message);
+    return res.status(500).send('An error occurred. Please try again later.');
+  }
 });
 
-app.get("/Login", (req, res) => {
-    res.render("login");
-});
 
 // Route to populate add Log dropdown
 app.get('/addLog', (req, res) => {
@@ -124,38 +158,6 @@ app.post('/addLog', (req, res) => {
     .catch (error => {
         console.error("Error adding user:", error);
   })
-});
-
-app.get('/babyLog', (req, res) => {
-    knex('baby_log')
-        .select()
-        // .where('user_id', user_id)
-        .then(logs => {
-            res.render('babyLog', { logs });
-        })
-        .catch(error => {
-            console.error('Error fetching logs:', error);
-            res.status(500).send('Internal Server Error');
-        });
-});
-
-app.get('/editLog/:id', (req, res) => {
-    const id = req.params.id
-    knex('baby_log')
-        .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
-        .select(
-            'activities.activity_description',
-            'baby_log.activity_date',
-            'baby_log.activity_notes'
-        )
-        .where('log_id', id)
-        .then(logs => {
-            res.render('/editLog', { logs });
-        })
-        .catch(error => {
-            console.error('Error fetching logs:', error);
-            res.status(500).send('Internal Server Error');
-        });
 });
 
 app.post('/editLog/:id', (req, res) => {
