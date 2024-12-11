@@ -158,16 +158,8 @@
     <header>
         <div class="header-content">
             <div class="logo">
-                <h1><a href="/" style="text-decoration: none; color:  white;">Baby Health Tracker</a></h1>
+                <h1><a href="/babyLog" style="text-decoration: none; color:  white;">Baby Health Tracker</a></h1>
             </div><br>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/features">Features</a></li>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                </ul>
-            </nav>
             <form class="logout-form" action="/logout" method="POST">
                 <button type="submit">Log Out</button>
             </form>            
@@ -180,11 +172,41 @@
             <p>View and manage logs below.</p>
         </div>
 
+        <div style="margin-bottom: 1rem;">
+            <label for="activityFilter">Filter by Activity: </label>
+            <select id="activityFilter" onchange="applyFilters()">
+                <option value="">All Activities</option>
+                <% activities.forEach((activity) => { %>
+                    <option value="<%= activity.activity_description %>" <%= selectedActivity === activity.activity_description ? 'selected' : '' %>><%= activity.activity_description %></option>
+                <% }) %>
+            </select>
+        
+            <label for="startDate">Start Date: </label>
+            <input type="date" id="startDate" value="<%= startDate || '' %>" onchange="applyFilters()">
+        
+            <label for="endDate">End Date: </label>
+            <input type="date" id="endDate" value="<%= endDate || '' %>" onchange="applyFilters()">
+        
+            <!-- Reset Button -->
+            <!-- Reset Button -->
+            <button onclick="resetFilters()" style="
+            background-color: #ccc; 
+            color: #333; 
+            border: 1px solid #999; 
+            padding: 0.3rem 0.8rem; 
+            border-radius: 4px; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            transition: background-color 0.3s;">
+            Reset
+            </button>
+        </div>
+
         <% if (logs && logs.length > 0) { %>
-            <table>
+            <table id="babyLog">
                 <thead>
                     <tr>
-                        <th>Activity</th>
+                        <th onclick="sortTable(0)">Activity</th>
                         <th>Date</th>
                         <th>Notes</th>
                         <th>Actions</th>
@@ -194,11 +216,10 @@
                     <% logs.forEach((log) => { %>
                         <tr>
                             <td><%= log.activity %></td>
-                            <td><%= log.activity_date %></td>
+                            <td><%= new Date(log.activity_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %></td>
                             <td><%= log.activity_notes %></td>
                             <td>
                                 <div class="button-container">
-                                    <!-- Delete Button -->
                                     <form action="/deleteLog/<%= log.log_id %>" method="POST" style="display:inline;">
                                         <button type="submit" class="delete" onclick="return confirm('Are you sure you want to delete?')" >Delete</button>
                                     </form>
@@ -217,7 +238,7 @@
                 </form>
             </div>
         <% } else { %>
-            <p>No logs available. Start by adding a new log!</p>
+            <p style="text-align: center;">No logs available. Start by adding a new log!</p>
             <div class="add-button">
                 <form action="/addLog" method="GET">
                     <button type="submit">Add a Log</button>
@@ -229,5 +250,62 @@
     <footer>
         <p>&copy; 2024 Baby Health Tracker | Helping parents give the best care</p>
     </footer>
+
+    <script>
+        function applyFilters() {
+            const activity = document.getElementById('activityFilter').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            const query = new URLSearchParams();
+            if (activity) query.set('activity', activity);
+            if (startDate) query.set('startDate', startDate);
+            if (endDate) query.set('endDate', endDate);
+
+            window.location.href = `/babyLog?${query.toString()}`;
+        }
+
+        function resetFilters() {
+            window.location.href = '/babyLog'; // Clear all query parameters
+        }
+
+
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("babyLog");
+            switching = true;
+            dir = "asc";
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount ++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html>
