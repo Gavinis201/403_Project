@@ -36,7 +36,7 @@
 
             <legend>Login</legend>
 
-            <form action="/login" method="post">
+            <form action="/babyLog" method="get">
 
                 <% if (error) { %>
                     <p style="color: red;" class="text-danger mt-3"><%= error === 'invalid_credentials' ? 'Invalid username or password' : '' %></p>
