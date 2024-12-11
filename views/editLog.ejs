@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Log</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* General Reset */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            color: #333;
+        }
+
+        header {
+            background: #0073e6;
+            color: #fff;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        button {
+            background: #0073e6;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background: #005bb5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: #0073e6;
+            color: #fff;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Edit Log</h1>
+    </header>
+    <main>
+        <form action="/editLog/<%= log.id %>" method="POST">
+            <div class="form-group">
+                <label for="activity_description">Activity:</label>
+                <select id="activity_description" name="activity_description" required>
+                    <% activities.forEach(activity => { %>
+                        <option value="<%= activity.activity_id %>" 
+                            <%= activity.activity_description === log.activity_description ? 'selected' : '' %>>
+                            <%= activity.activity_description %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="activity_date">Date:</label>
+                <input type="date" id="activity_date" name="activity_date" value="<%= log.activity_date %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="activity_notes">Notes:</label>
+                <input type="text" id="activity_notes" name="activity_notes" value="<%= log.activity_notes %>" required>
+            </div>
+
+            <button type="submit">Save Changes</button>
+        </form>
+
+        <a href="/babyLog" style="display: inline-block; margin-top: 1rem;">Cancel</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Baby Tracker</p>
+    </footer>
+</body>
+</html>

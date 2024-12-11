@@ -21,11 +21,11 @@ const knex = require("knex") ({
     client : "pg",
     connection : {
         host : process.env.RDS_HOSTNAME || "localhost",
-        user : process.env.RDS_USERNAME || "postgres",
-        password : process.env.RDS_PASSWORD || "Gavin12",
-        database : process.env.RDS_DB_NAME || "baby",
+        user : process.env.RDS_USERNAME || "testuser",
+        password : process.env.RDS_PASSWORD || "test",
+        database : process.env.RDS_DB_NAME || "BabyLogs",
         port : process.env.RDS_PORT || 5432,
-        
+        // ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
 })
 
@@ -35,50 +35,16 @@ app.get("/", (req, res) =>
 });
 
 app.get("/login", (req, res) => {
-  const error = req.query.error;
-  security = false;
-  res.render("login", { error });
+    res.render("login");
 });
 
-// Route to login to administrator side
-// Compares username and password
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-
-  // Check for missing fields
-  if (!username || !password) {
-    return res.status(400).send('Username and password are required. Why though?');
-  }
-
-  try {
-    // Fetch the user by username
-    const user = await knex('accounts')
-      .select('*')
-      .where({ username })
-      .first(); // Fetch the first matching record
-
-    if (!user) {
-      // If no matching user is found
-      console.log('No user found with username:', username);
-      return res.redirect('/loginPage?error=invalid_credentials');
-    }
-
-    if (password === user.password) {
-      // Passwords match
-      console.log('Login was successful');
-      return res.redirect('/view');
-    } else {
-      // Passwords don't match
-      console.log('Password does not match user', username);
-      return res.redirect('/login?error=invalid_credentials');
-    }
-  } catch (error) {
-    // Handle any errors during the database query or password comparison
-    console.error('Error during login:', error.message);
-    return res.status(500).send('An error occurred. Please try again later.');
-  }
+app.get("/", (req, res) => {
+    res.send("Welcome to the Home Page!");
 });
 
+app.get("/Login", (req, res) => {
+    res.render("login");
+});
 
 // Route to populate add Log dropdown
 app.get('/addLog', (req, res) => {
@@ -159,6 +125,65 @@ app.post('/addLog', (req, res) => {
         console.error("Error adding user:", error);
   })
 });
+
+app.get('/babyLog', (req, res) => {
+    knex('baby_log')
+        .select()
+        // .where('user_id', user_id)
+        .then(logs => {
+            res.render('babyLog', { logs });
+        })
+        .catch(error => {
+            console.error('Error fetching logs:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+app.get('/editLog/:id', (req, res) => {
+    const id = req.params.id
+    knex('baby_log')
+        .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
+        .select(
+            'activities.activity_description',
+            'baby_log.activity_date',
+            'baby_log.activity_notes'
+        )
+        .where('log_id', id)
+        .then(logs => {
+            res.render('/editLog', { logs });
+        })
+        .catch(error => {
+            console.error('Error fetching logs:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+app.post('/editLog/:id', (req, res) => {
+    const logId = req.params.id; // Extract the log ID from the URL
+    const { activity_description, activity_date, activity_notes } = req.body; // Extract form data
+
+    // Update the `baby_log` table
+    knex('baby_log')
+        .where('id', logId) // Match the log by ID
+        .update({
+            activity_id: knex('activities') // Update `activity_id` based on `activity_description`
+                .select('activity_id')
+                .where('activity_description', activity_description),
+            activity_date, // Update the date
+            activity_notes // Update the notes
+        })
+        .then(() => {
+            // Redirect back to the main Baby Log page or a confirmation page
+            res.redirect('/babyLog');
+        })
+        .catch(error => {
+            console.error('Error updating log:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+app.post
+
 
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
