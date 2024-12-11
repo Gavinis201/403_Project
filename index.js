@@ -205,7 +205,7 @@ app.get('/editLog/:id', (req, res) => {
             knex('activities').select('activity_id', 'activity_description')
                 .then(activities => {
                     // Render the edit log page with the log data and available activities
-                    res.render('editLog', { log, activities });
+                    res.render('editLog', { log, activities, logId });
                 })
         })
         .catch(error => {
