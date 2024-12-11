@@ -21,9 +21,10 @@ const knex = require("knex") ({
     client : "pg",
     connection : {
         host : process.env.RDS_HOSTNAME || "localhost",
-        user : process.env.RDS_USERNAME || "testuser",
-        password : process.env.RDS_PASSWORD || "test",
-        database : process.env.RDS_DB_NAME || "BabyLogs",
+        user : process.env.RDS_USERNAME || "postgres",
+        password : process.env.RDS_PASSWORD || "Gavin12",
+        database : process.env.RDS_DB_NAME || "baby",
+
         port : process.env.RDS_PORT || 5432,
         // ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
@@ -265,6 +266,7 @@ app.post('/editLog/:id', (req, res) => {
         });
 });
 
+
 app.post('/logout', (req, res) => {
     res.clearCookie('user_id'); // Clear the user cookie
     res.redirect('/'); // Redirect to the home page or login page
@@ -288,3 +290,4 @@ app.post('/logout', (req, res) => {
 })
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
+
