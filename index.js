@@ -164,8 +164,8 @@ app.get('/babyLog/:user_id', (req, res) => {
   const user_id = req.params.user_id;
 
     knex('baby_log')
-        .select()
         .where('user_id', user_id)
+        .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
         .then(logs => {
             res.render('babyLog', { logs });
         })
