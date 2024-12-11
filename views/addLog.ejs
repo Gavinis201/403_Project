@@ -133,10 +133,10 @@ textarea:focus {
         </div>
     </header>
     <section class="form-container">
-        <form action="/addLog" method="POST">
+        <form action="/addLog/<%= user_id %>" method="POST">
             <div class="form-group">
-                <label for="activity">Activity:</label>
-                <select id="activity" name="activity" required>
+                <label for="activity_d">Activity:</label>
+                <select id="activity_id" name="activity_id" required>
                     <option value="" disabled selected>Select an Activity</option>
                     <% activity_types.forEach(type => { %>
                         <option value="<%= type.activity_id %>"><%= type.activity_description %></option>
@@ -145,13 +145,13 @@ textarea:focus {
             </div>
 
             <div class="form-group">
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date" value="<%= new Date(localDate).toISOString().slice(0, 10) %>" required>
+                <label for="activity_date">Date:</label>
+                <input type="date" id="activity_date" name="activity_date" value="<%= new Date(localDate).toISOString().slice(0, 10) %>" required>
             </div>
             
             <div class="form-group">
-                <label for="Notes">Notes:</label>
-                <textarea id="Notes" name="Notes" required></textarea>
+                <label for="activity_notes">Notes:</label>
+                <textarea id="activity_notes" name="activity_notes" required></textarea>
             </div>
             
             <div class="form-actions">
