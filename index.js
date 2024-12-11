@@ -21,9 +21,9 @@ const knex = require("knex") ({
     client : "pg",
     connection : {
         host : process.env.RDS_HOSTNAME || "localhost",
-        user : process.env.RDS_USERNAME || "postgres",
-        password : process.env.RDS_PASSWORD || "Gavin12",
-        database : process.env.RDS_DB_NAME || "baby",
+        user : process.env.RDS_USERNAME || "intex",
+        password : process.env.RDS_PASSWORD || "password",
+        database : process.env.RDS_DB_NAME || "project_3_v2",
         port : process.env.RDS_PORT || 5432,
         // ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
@@ -66,7 +66,7 @@ app.post('/login', async (req, res) => {
     if (password === user.password) {
       // Passwords match
       console.log('Login was successful');
-      return res.redirect('/babyLog');
+      res.redirect(`/babyLog/${user.user_id}`);
     } else {
       // Passwords don't match
       console.log('Password does not match user', username);
@@ -160,12 +160,24 @@ app.post('/addLog', (req, res) => {
   })
 });
 
-app.get('/babyLog', (req, res) => {
+app.get('/babyLog/:user_id', (req, res) => {
+  const user_id = req.params.user_id;
+
     knex('baby_log')
-        .select()
-        // .where('user_id', user_id)
+        .where('user_id', user_id)
+        .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
         .then(logs => {
-            res.render('babyLog', { logs });
+            // Format the activity_date before sending to the template
+            const formattedLogs = logs.map(log => ({
+              ...log,
+              activity_date: new Intl.DateTimeFormat('en-US', { 
+                  month: 'long', 
+                  day: 'numeric', 
+                  year: 'numeric' 
+              }).format(new Date(log.activity_date))
+          }));
+
+          res.render('babyLog', { logs: formattedLogs });
         })
         .catch(error => {
             console.error('Error fetching logs:', error);
@@ -193,7 +205,7 @@ app.get('/editLog/:id', (req, res) => {
             knex('activities').select('activity_id', 'activity_description')
                 .then(activities => {
                     // Render the edit log page with the log data and available activities
-                    res.render('editLog', { log, activities });
+                    res.render('editLog', { log, activities, logId });
                 })
         })
         .catch(error => {

@@ -17,12 +17,12 @@
         }
 
         header {
-            background: #0073e6;
+            background-color: #4a90e2;
             color: #fff;
-            padding: 1.5rem 0;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+            padding: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+}
 
         main {
             max-width: 900px;
@@ -47,7 +47,7 @@
         }
 
         table th {
-            background: #0073e6;
+            background: #4a90e2;
             color: #fff;
         }
 
@@ -65,7 +65,7 @@
         }
 
         button {
-            background: #0073e6;
+            background: #4a90e2;
             color: #fff;
             border: none;
             padding: 0.5rem 1rem;
@@ -101,7 +101,7 @@
         footer {
             text-align: center;
             padding: 1rem;
-            background: #0073e6;
+            background: #4a90e2;
             color: #fff;
             margin-top: 2rem;
             font-size: 0.9rem;
@@ -110,9 +110,17 @@
 </head>
 <body>
     <header>
-        <h1>Baby Log</h1>
+        <div class="header-content">
+            <div class="logo">
+                <h1><a href="/" style="text-decoration: none; color:  white;">Baby Health Tracker</a></h1>
+            </div><br>
+            <div class="button-group">
+                <a href="/" class="btn">Log Out</a>
+                </div>
+        </div>
     </header>
     <main>
+        <h1>Activities</h1>
         <!-- Display Logs -->
         <% if (logs && logs.length > 0) { %>
             <table>
@@ -127,7 +135,7 @@
                 <tbody>
                     <% logs.forEach((log) => { %>
                         <tr>
-                            <td><%= log.activity %></td>
+                            <td><%= log.activity_description %></td>
                             <td><%= log.activity_date %></td>
                             <td><%= log.activity_notes %></td>
                             <td>
