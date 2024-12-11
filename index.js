@@ -167,7 +167,17 @@ app.get('/babyLog/:user_id', (req, res) => {
         .where('user_id', user_id)
         .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
         .then(logs => {
-            res.render('babyLog', { logs });
+            // Format the activity_date before sending to the template
+            const formattedLogs = logs.map(log => ({
+              ...log,
+              activity_date: new Intl.DateTimeFormat('en-US', { 
+                  month: 'long', 
+                  day: 'numeric', 
+                  year: 'numeric' 
+              }).format(new Date(log.activity_date))
+          }));
+
+          res.render('babyLog', { logs: formattedLogs });
         })
         .catch(error => {
             console.error('Error fetching logs:', error);
