@@ -199,7 +199,7 @@
     
       <div class="form-group">
         <label for="activity_date">Date</label>
-        <input type="date" id="activity_date" name="activity_date" required>
+        <input type="date" id="activity_date" name="activity_date" value="<%= new Date(localDate).toISOString().slice(0, 10) %>" required>
       </div>
     
       <div class="form-group">
