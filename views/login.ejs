@@ -10,11 +10,10 @@
     </head>
     <body>
 
- <header>
-
+        <header>
             <div class="header-content">
                 <div class="logo">
-                    <h1>Baby Health Tracker</h1>
+                    <h1><a href="/" style="text-decoration: none; color:  white;">Baby Health Tracker</a></h1>
                 </div><br>
                 <nav>
                     <ul class="nav-links">
@@ -26,23 +25,29 @@
                 </nav>
                 <div class="button-group">
                     <a href="/login" class="btn">Log In</a>
-
                     <a href="/addUser" class="btn">Sign Up</a>
-                 </div>
+                    </div>
             </div>
         </header>
+
+
         <br>
         <div class="login_container">
 
             <legend>Login</legend>
+
             <form action="/login" method="post">
                 <label for="username">User Name:</label>
                 <input type="text" id="username" name="username" required>
 
+
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
 
+
+
                 <button type="submit" class="button">Submit</button>
+
             </form>
 
         </div>

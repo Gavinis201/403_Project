@@ -11,29 +11,29 @@
 <body>
   <!-- Header -->
   <header>
-        <div class="header-content">
-            <div class="logo">
-                <h1>Baby Health Tracker</h1>
-            </div><br>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/features">Features</a></li>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                </ul>
-            </nav>
-            <div class="button-group">
-                <a href="/login" class="btn">Log In</a>
-                <a href="/addUser" class="btn">Sign Up</a>
-                </div>
-        </div>
-    </header>
+    <div class="header-content">
+        <div class="logo">
+            <h1><a href="/" style="text-decoration: none; color:  white;">Baby Health Tracker</a></h1>
+        </div><br>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/features">Features</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="button-group">
+            <a href="/login" class="btn">Log In</a>
+            <a href="/addUser" class="btn">Sign Up</a>
+            </div>
+    </div>
+</header>
 
   <!-- Main Content -->
-  <div class="container mt-5">
+  <div class="container mt-5 ">
     <h1 class="mb-4">Add New User</h1>
-    <form action="/addUser" method="POST">
+    <form action="/addUser" method="POST" class="width">
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input type="text" id="username" name="username" class="form-control" required>
