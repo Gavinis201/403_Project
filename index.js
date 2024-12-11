@@ -21,11 +21,11 @@ const knex = require("knex") ({
     client : "pg",
     connection : {
         host : process.env.RDS_HOSTNAME || "localhost",
-        user : process.env.RDS_USERNAME || "postgres",
-        password : process.env.RDS_PASSWORD || "Gavin12",
-        database : process.env.RDS_DB_NAME || "baby",
+        user : process.env.RDS_USERNAME || "testuser",
+        password : process.env.RDS_PASSWORD || "test",
+        database : process.env.RDS_DB_NAME || "BabyLogs",
         port : process.env.RDS_PORT || 5432,
-        
+        // ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
 })
 
@@ -60,13 +60,13 @@ app.post('/login', async (req, res) => {
     if (!user) {
       // If no matching user is found
       console.log('No user found with username:', username);
-      return res.redirect('/loginPage?error=invalid_credentials');
+      return res.redirect('/login?error=invalid_credentials');
     }
 
     if (password === user.password) {
       // Passwords match
       console.log('Login was successful');
-      return res.redirect('/view');
+      return res.redirect('/babyLog');
     } else {
       // Passwords don't match
       console.log('Password does not match user', username);
@@ -159,6 +159,33 @@ app.post('/addLog', (req, res) => {
         console.error("Error adding user:", error);
   })
 });
+
+app.post('/editLog/:id', (req, res) => {
+    const logId = req.params.id; // Extract the log ID from the URL
+    const { activity_description, activity_date, activity_notes } = req.body; // Extract form data
+
+    // Update the `baby_log` table
+    knex('baby_log')
+        .where('id', logId) // Match the log by ID
+        .update({
+            activity_id: knex('activities') // Update `activity_id` based on `activity_description`
+                .select('activity_id')
+                .where('activity_description', activity_description),
+            activity_date, // Update the date
+            activity_notes // Update the notes
+        })
+        .then(() => {
+            // Redirect back to the main Baby Log page or a confirmation page
+            res.redirect('/babyLog');
+        })
+        .catch(error => {
+            console.error('Error updating log:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+app.post
+
 
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
