@@ -210,7 +210,9 @@ app.post('/addUser', async (req, res) => {
 //Route to access baby Log landing page
 app.get('/babyLog', authenticateUser, (req, res) => {
     const user_id = req.user_id;
-    const activityFilter = req.query.activity || ''; // Get the activity filter from the query parameter, default to an empty string if not provided
+    const activityFilter = req.query.activity || ''; // Get the activity filter
+    const startDate = req.query.startDate || '';     // Get the start date filter
+    const endDate = req.query.endDate || '';         // Get the end date filter
 
     let query = knex('baby_log')
         .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
@@ -224,15 +226,24 @@ app.get('/babyLog', authenticateUser, (req, res) => {
         )
         .where('baby_log.user_id', user_id);
 
+    // Apply activity filter if provided
     if (activityFilter) {
         query = query.andWhere('activities.activity_description', activityFilter);
+    }
+
+    // Apply date range filters if provided
+    if (startDate) {
+        query = query.andWhere('baby_log.activity_date', '>=', startDate);
+    }
+    if (endDate) {
+        query = query.andWhere('baby_log.activity_date', '<=', endDate);
     }
 
     query.orderBy('baby_log.activity_date', 'asc')
         .then(logs => {
             // Fetch distinct activities for the filter dropdown
             return knex('activities').distinct('activity_description').then(activities => {
-                res.render('babyLog', { logs, activities, selectedActivity: activityFilter });
+                res.render('babyLog', { logs, activities, selectedActivity: activityFilter, startDate, endDate });
             });
         })
         .catch(error => {
@@ -240,6 +251,7 @@ app.get('/babyLog', authenticateUser, (req, res) => {
             res.status(500).send('Internal Server Error');
         });
 });
+
 
 app.get('/editLog/:id', authenticateUser, (req, res) => {
     const logId = req.params.id;
