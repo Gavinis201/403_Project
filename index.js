@@ -15,6 +15,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, "public") ));
 
 const knex = require("knex") ({
+
   client : "pg",
   connection : {
       host : "awseb-e-aeawnyqkgk-stack-awsebrdsdatabase-lp5nnwnwi2kf.crqwcg4emp7g.us-east-1.rds.amazonaws.com",
@@ -24,6 +25,7 @@ const knex = require("knex") ({
       port: 5432,
       ssl: { rejectUnauthorized: false }
   }
+
 })
 
 const cookieParser = require('cookie-parser');

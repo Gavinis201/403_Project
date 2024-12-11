@@ -172,7 +172,13 @@
             <p>View and manage logs below.</p>
         </div>
 
-        <div style="margin-bottom: 1rem;">
+        <div class="add-button" style="box-shadow: none;">
+            <form action="/addLog" method="GET" style="box-shadow: none; padding: 5px;" >
+                <button type="submit">Add a Log</button>
+            </form>
+        </div><br>
+
+        <div class="filter">
             <label for="activityFilter">Filter by Activity: </label>
             <select id="activityFilter" onchange="applyFilters()">
                 <option value="">All Activities</option>
@@ -201,7 +207,7 @@
             Reset
             </button>
         </div>
-
+       
         <% if (logs && logs.length > 0) { %>
             <table id="babyLog">
                 <thead>
@@ -232,11 +238,7 @@
                     <% }) %>
                 </tbody>
             </table>
-            <div class="add-button">
-                <form action="/addLog" method="GET">
-                    <button type="submit">Add a Log</button>
-                </form>
-            </div>
+            
         <% } else { %>
             <p style="text-align: center;">No logs available. Start by adding a new log!</p>
             <div class="add-button">
