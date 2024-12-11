@@ -141,8 +141,8 @@
                             <td>
                                 <div class="button-container">
                                     <!-- Delete Button -->
-                                    <form action="/deleteLog" method="POST" style="display:inline;">
-                                        <button type="submit" class="delete">Delete</button>
+                                    <form action="/deleteLog/<%= log.log_id %>" method="POST" style="display:inline;">
+                                        <button type="submit" class="delete" onclick="return confirm('Are you sure you want to delete?')" >Delete</button>
                                     </form>
                                     <!-- Edit Button -->
                                     <form action="/editLog/<%= log.log_id %>" method="GET" style="display:inline;">
