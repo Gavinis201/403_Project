@@ -160,31 +160,81 @@ app.post('/addLog', (req, res) => {
   })
 });
 
-app.post('/editLog/:id', (req, res) => {
-    const logId = req.params.id; // Extract the log ID from the URL
-    const { activity_description, activity_date, activity_notes } = req.body; // Extract form data
-
-    // Update the `baby_log` table
+app.get('/babyLog', (req, res) => {
     knex('baby_log')
-        .where('id', logId) // Match the log by ID
-        .update({
-            activity_id: knex('activities') // Update `activity_id` based on `activity_description`
-                .select('activity_id')
-                .where('activity_description', activity_description),
-            activity_date, // Update the date
-            activity_notes // Update the notes
-        })
-        .then(() => {
-            // Redirect back to the main Baby Log page or a confirmation page
-            res.redirect('/babyLog');
+        .select()
+        // .where('user_id', user_id)
+        .then(logs => {
+            res.render('babyLog', { logs });
         })
         .catch(error => {
-            console.error('Error updating log:', error);
+            console.error('Error fetching logs:', error);
             res.status(500).send('Internal Server Error');
         });
 });
 
-app.post
+app.get('/editLog/:id', (req, res) => {
+    const logId = req.params.id;
+
+    // Fetch log data for the provided logId
+    knex('baby_log')
+        .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
+        .select(
+            'baby_log.log_id',
+            'activities.activity_id', // Make sure to fetch the activity_id for later use
+            'activities.activity_description',
+            'baby_log.activity_date',
+            'baby_log.activity_notes'
+        )
+        .where('baby_log.log_id', logId)
+        .first()
+        .then(log => {
+            // Fetch all activities for the dropdown
+            knex('activities').select('activity_id', 'activity_description')
+                .then(activities => {
+                    // Render the edit log page with the log data and available activities
+                    res.render('editLog', { log, activities });
+                })
+        })
+        .catch(error => {
+            console.error('Error fetching log:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+app.post('/editLog/:id', (req, res) => {
+    const logId = req.params.id; // Extract the log ID from the URL
+    const { activity_description, activity_date, activity_notes } = req.body; // Extract form data
+
+    // Get the activity_id for the selected activity_description
+    knex('activities')
+        .select('activity_id')
+        .where('activity_description', activity_description)
+        .first()
+        .then(activity => {
+            // Update the `baby_log` table with the new values
+            knex('baby_log')
+                .where('log_id', logId)
+                .update({
+                    activity_id: activities.activity_id, // Set the correct activity_id
+                    activity_date, // Update the date
+                    activity_notes // Update the notes
+                })
+                .then(() => {
+                    // Redirect back to the main Baby Log page
+                    res.redirect('/babyLog');
+                })
+                .catch(error => {
+                    console.error('Error updating log:', error);
+                    res.status(500).send('Internal Server Error');
+                });
+        })
+        .catch(error => {
+            console.error('Error finding activity ID:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
 
 
 
