@@ -35,12 +35,12 @@
         <div class="login_container">
 
             <legend>Login</legend>
-            <form>
-                <label for="txtUserName">User Name:</label>
-                <input type="text" id="txtUserName" required>
+            <form action="/login" method="post">
+                <label for="UserName">User Name:</label>
+                <input type="text" id="UserName" required>
 
-                <label for="txtPassword">Password:</label>
-                <input type="password" id="txtPassword" required>
+                <label for="Password">Password:</label>
+                <input type="password" id="Password" required>
                 <button type="button" class="button" id="btn" onclick="togglePassword();">Show</button>
 
                 <button type="button" class="button" onclick="displayPassword();">Submit</button>
