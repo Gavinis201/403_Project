@@ -216,39 +216,33 @@ app.get('/editLog/:id', (req, res) => {
 
 app.post('/editLog/:id', (req, res) => {
     const logId = req.params.id; // Extract the log ID from the URL
-    const { activity_description, activity_date, activity_notes } = req.body; // Extract form data
+    const activity_id = req.body.activity_id;
+    const activity_date = req.body.activity_date;
+    const activity_notes = req.body.activity_notes;
 
-    // Get the activity_id for the selected activity_description
-    knex('activities')
-        .select('activity_id')
-        .where('activity_description', activity_description)
-        .first()
-        .then(activity => {
+
             // Update the `baby_log` table with the new values
             knex('baby_log')
                 .where('log_id', logId)
                 .update({
-                    activity_id: activities.activity_id, // Set the correct activity_id
-                    activity_date, // Update the date
-                    activity_notes // Update the notes
+                    activity_id: activity_id, // Set the correct activity_id
+                    activity_date: activity_date, // Update the date
+                    activity_notes: activity_notes // Update the notes
                 })
                 .then(() => {
-                    // Redirect back to the main Baby Log page
-                    res.redirect('/babyLog');
+
+                  knex('baby_log')
+                  .where('log_id', logId)
+                  .first()
+                  .then(log => {
+                    res.redirect(`/babyLog/${log.user_id}`);
+                  })
                 })
                 .catch(error => {
                     console.error('Error updating log:', error);
                     res.status(500).send('Internal Server Error');
                 });
         })
-        .catch(error => {
-            console.error('Error finding activity ID:', error);
-            res.status(500).send('Internal Server Error');
-        });
-});
-
-
-
 
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
