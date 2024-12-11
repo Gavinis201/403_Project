@@ -27,7 +27,6 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 78vh;
 }
 
 /* Header */
@@ -146,6 +145,9 @@ nav {
     
 }
 
+.width{
+    width: 50%;
+}
 /* Form Styles */
 form {
     background-color: #fff;

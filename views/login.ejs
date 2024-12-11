@@ -10,11 +10,10 @@
     </head>
     <body>
 
- <header>
-
+        <header>
             <div class="header-content">
                 <div class="logo">
-                    <h1>Baby Health Tracker</h1>
+                    <h1><a href="/" style="text-decoration: none; color:  white;">Baby Health Tracker</a></h1>
                 </div><br>
                 <nav>
                     <ul class="nav-links">
@@ -26,16 +25,17 @@
                 </nav>
                 <div class="button-group">
                     <a href="/login" class="btn">Log In</a>
-
                     <a href="/addUser" class="btn">Sign Up</a>
-                 </div>
+                    </div>
             </div>
         </header>
+
+
         <br>
         <div class="login_container">
 
             <legend>Login</legend>
-            <form>
+            <form action="/" method="GET">
                 <label for="txtUserName">User Name:</label>
                 <input type="text" id="txtUserName" required>
 
@@ -43,7 +43,7 @@
                 <input type="password" id="txtPassword" required>
                 <button type="button" class="button" id="btn" onclick="togglePassword();">Show Password</button>
 
-                <button type="button" class="button" onclick="displayPassword();">Log In</button>
+                <button type="submit" class="button" onclick="displayPassword();" >Log In</button>
             </form>
         <p id="myOutput"></p>
 
