@@ -166,7 +166,7 @@ app.post('/addUser', async (req, res) => {
 
   // checks to see if passwords match
   if (password !== confirm_password) {
-    return res.status(400).render('newUser', { 
+    return res.status(400).render('addUser', { 
       user: {  
         username
       },
@@ -200,7 +200,7 @@ app.post('/addUser', async (req, res) => {
     res.redirect('/babyLog');
   } catch (error) {
     console.error("Error adding user:", error);
-    res.status(500).render('newUser', { 
+    res.status(500).render('addUser', { 
       user: { username }, 
       error: "There was an error creating your account. Please try again.", 
       formSubmitted: true 
