@@ -5,9 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login Page</title>
         <link rel="stylesheet" href="/styles.css">
-
-
     </head>
+    
     <body>
 
         <header>
@@ -31,12 +30,12 @@
         </header>
 
 
-        <br>
+        <br><br>
         <div class="login_container">
 
             <legend>Login</legend>
 
-            <form action="/login" method="post">
+            <form action="/babyLog" method="post">
 
                 <% if (error) { %>
                     <p style="color: red;" class="text-danger mt-3"><%= error === 'invalid_credentials' ? 'Invalid username or password' : '' %></p>
