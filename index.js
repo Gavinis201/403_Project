@@ -35,12 +35,52 @@ app.get("/", (req, res) =>
 });
 
 app.get("/login", (req, res) => {
-    res.render("login");
+  const error = req.query.error;
+  security = false;
+  res.render("login", { error });res.render("login");
 });
 
+// Route to login to administrator side
+// Compares username and password
+app.post('/login', async (req, res) => {
+  const { UserName, Password } = req.body;
+
+  try {
+    // Fetch the user by username
+    const user = await knex('accounts')
+      .select('*')
+      .where({ UserName })
+      .first(); // Fetch the first matching record
+
+    if (!user) {
+      // If no matching user is found
+      console.log('No user found with username:', UserName); // Debugging line
+      return res.redirect('/loginPage?error=invalid_credentials');
+    }
+
+    if (Password === user.password) {
+      // Passwords match
+      security = true;
+      return res.redirect('/view');
+    } else {
+      // Passwords don't match
+      security = false;
+      console.log('Password does not match user', username);
+      return res.redirect('/login?error=invalid_credentials');
+    }
+  } catch (error) {
+    // Handle any errors during the database query or password comparison
+    console.error('Error during login:', error.message);
+    return res.status(500).send('An error occurred. Please try again later.');
+  }
+});
 
 // Route to populate add Log dropdown
 app.get('/addLog', (req, res) => {
+    if (security == false) {
+        // Return to Login screen
+        return res.redirect('/login');
+      }
     const { success } = req.query; 
     // Fetch types to populate the dropdown
     knex('activities')
@@ -118,5 +158,6 @@ app.post('/addLog', (req, res) => {
         console.error("Error adding user:", error);
   })
 });
+
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
