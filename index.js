@@ -21,13 +21,30 @@ const knex = require("knex") ({
     client : "pg",
     connection : {
         host : process.env.RDS_HOSTNAME || "localhost",
-        user : process.env.RDS_USERNAME || "intex",
-        password : process.env.RDS_PASSWORD || "password",
-        database : process.env.RDS_DB_NAME || "project_3_v2",
+        user : process.env.RDS_USERNAME || "testuser",
+        password : process.env.RDS_PASSWORD || "test",
+        database : process.env.RDS_DB_NAME || "BabyLogs",
         port : process.env.RDS_PORT || 5432,
         // ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
 })
+
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+const authenticateUser = (req, res, next) => {
+    // Check if the user_id cookie exists
+    const userId = req.cookies['user_id'];
+  
+    if (!userId) {
+      return res.redirect('/login?error=not_authenticated'); // Redirect if not authenticated
+    }
+  
+    // You can use the userId to fetch the user data from the database, if needed
+    req.user_id = userId;
+    next(); // Allow the request to proceed
+  };
+  
 
 app.get("/", (req, res) =>
 {
@@ -43,47 +60,42 @@ app.get("/login", (req, res) => {
 // Route to login to administrator side
 // Compares username and password
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-
-  // Check for missing fields
-  if (!username || !password) {
-    return res.status(400).send('Username and password are required. Why though?');
-  }
-
-  try {
-    // Fetch the user by username
-    const user = await knex('accounts')
-      .select('*')
-      .where({ username })
-      .first(); // Fetch the first matching record
-
-    if (!user) {
-      // If no matching user is found
-      console.log('No user found with username:', username);
-      return res.redirect('/login?error=invalid_credentials');
+    const { username, password } = req.body;
+  
+    // Check for missing fields
+    if (!username || !password) {
+      return res.status(400).send('Username and password are required.');
     }
-
-    if (password === user.password) {
-      // Passwords match
+  
+    try {
+      // Fetch the user by username
+      const user = await knex('accounts')
+        .select('*')
+        .where({ username })
+        .first(); // Fetch the first matching record
+  
+      if (!user || password !== user.password) {
+        // If no matching user or incorrect password
+        return res.redirect('/login?error=invalid_credentials');
+      }
+  
+      // Store user information in a cookie
+      res.cookie('user_id', user.user_id, { httpOnly: true, maxAge: 3600000 }); // Expires in 1 hour
+  
       console.log('Login was successful');
-      res.redirect(`/babyLog/${user.user_id}`);
-    } else {
-      // Passwords don't match
-      console.log('Password does not match user', username);
-      return res.redirect('/login?error=invalid_credentials');
+      res.redirect('/babyLog'); // Redirect to a protected route after successful login
+    } catch (error) {
+      console.error('Error during login:', error.message);
+      return res.status(500).send('An error occurred. Please try again later.');
     }
-  } catch (error) {
-    // Handle any errors during the database query or password comparison
-    console.error('Error during login:', error.message);
-    return res.status(500).send('An error occurred. Please try again later.');
-  }
-});
+  });
+  
 
 
 // Route to populate add Log dropdown
-app.get('/addLog/:user_id', (req, res) => {
+app.get('/addLog', (req, res) => {
     const { success } = req.query; 
-    const user_id = req.params.user_id;
+    const user_id = req.cookies.user_id;
     // Fetch types to populate the dropdown
     knex('activities')
       .select('activity_id', 'activity_description')
@@ -106,32 +118,37 @@ app.get('/addLog/:user_id', (req, res) => {
 });
 
   // Route to Add new Log
-app.post('/addLog/:user_id', (req, res) => {
+  app.post('/addLog', (req, res) => {
     // Extract form values from req.body
-    const activity_id  = req.body.activity_id ; // Default to empty string if not provided; 
-    const activity_date  = req.body.activity_date ; 
-    const activity_notes  = req.body.activity_notes || ''; // Default to empty string if not provided
-    const user_id = req.params.user_id;
-
-    console.log(activity_id, activity_date, activity_notes, user_id);
+    const activity_id = req.body.activity_id; 
+    const activity_date = req.body.activity_date; 
+    const activity_notes = req.body.activity_notes || ''; // Default to empty string if not provided
+    const user_id = req.cookies.user_id;
   
-    // Insert the new volunteer into the database
+    // Log the values to ensure they are being received correctly
+    console.log({ activity_id, activity_date, activity_notes, user_id });
+  
+    if (!activity_id || !activity_date || !user_id) {
+      return res.status(400).send('All fields are required.');
+    }
+  
+    // Insert the new log into the database
     knex('baby_log')
       .insert({
-       user_id: user_id,
-       activity_id: activity_id,
-       activity_date: activity_date,
-       activity_notes: activity_notes
+        user_id: user_id,
+        activity_id: activity_id,
+        activity_date: activity_date,
+        activity_notes: activity_notes
       })
       .then(() => {
-          res.redirect(`/babyLog/${user_id}`); // Redirect to the Home view page after adding
+        res.redirect(`/babyLog`); // Redirect to the Home view page after adding
       })
       .catch(error => {
-          console.error('Error adding Log', error);
-          res.status(500).send('Internal Server Error');
+        console.error('Error adding Log:', error);
+        res.status(500).send('Internal Server Error');
       });
- });
-
+  });
+  
  // Route to new user
  app.get('/addUser', (req, res) => {
     res.render('addUser', {error: "Passwords do not match. Please try again.", formSubmitted: false});
@@ -172,116 +189,102 @@ app.post('/addLog/:user_id', (req, res) => {
   })
 });
 
-app.get('/babyLog/:user_id', (req, res) => {
-  const user_id = req.params.user_id;
-
+app.get('/babyLog', authenticateUser, (req, res) => {
+    const user_id = req.user_id; // Access user_id from the request object
+  
     knex('baby_log')
-        .where('user_id', user_id)
-        .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
-        .then(logs => {
-            // Format the activity_date before sending to the template
-            const formattedLogs = logs.map(log => ({
-              ...log,
-              activity_date: new Intl.DateTimeFormat('en-US', { 
-                  month: 'long', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-              }).format(new Date(log.activity_date))
-          }));
-
-          res.render('babyLog', { logs: formattedLogs, user_id });
-        })
-        .catch(error => {
-            console.error('Error fetching logs:', error);
-            res.status(500).send('Internal Server Error');
-        });
-});
+      .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
+      .select(
+        'baby_log.user_id',
+        'baby_log.log_id',
+        'activities.activity_id',
+        'activities.activity_description as activity',
+        'baby_log.activity_date',
+        'baby_log.activity_notes'
+      )
+      .where('baby_log.user_id', user_id) // Fetch logs for the authenticated user
+      .orderBy('baby_log.activity_date', 'asc')
+      .then(logs => {
+        res.render('babyLog', { logs });
+      })
+      .catch(error => {
+        console.error('Error fetching logs:', error);
+        res.status(500).send('Internal Server Error');
+      });
+  });  
+  
 
 app.get('/editLog/:id', (req, res) => {
     const logId = req.params.id;
 
     // Fetch log data for the provided logId
     knex('baby_log')
-        .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
-        .select(
-            'baby_log.log_id',
-            'activities.activity_id', // Make sure to fetch the activity_id for later use
-            'activities.activity_description',
-            'baby_log.activity_date',
-            'baby_log.activity_notes'
-        )
-        .where('baby_log.log_id', logId)
-        .first()
-        .then(log => {
-            // Fetch all activities for the dropdown
-            knex('activities').select('activity_id', 'activity_description')
-                .then(activities => {
-                    // Render the edit log page with the log data and available activities
-                    res.render('editLog', { log, activities, logId });
-                })
-        })
-        .catch(error => {
-            console.error('Error fetching log:', error);
-            res.status(500).send('Internal Server Error');
-        });
+    .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
+    .select(
+        'baby_log.log_id',
+        'activities.activity_id',
+        'activities.activity_description as activity',
+        'baby_log.activity_date',
+        'baby_log.activity_notes'
+    )
+    .where('baby_log.log_id', logId)
+    .first()
+    .then(log => {
+        // Fetch all activities for the dropdown
+        knex('activities').select('activity_id', 'activity_description')
+            .then(activities => {
+                // Render the edit log page with the log data and available activities
+                res.render('editLog', { log, activities });
+            });
+    })
+    .catch(error => {
+        console.error('Error fetching log:', error);
+        res.status(500).send('Internal Server Error');
+    });
 });
 
 app.post('/editLog/:id', (req, res) => {
     const logId = req.params.id; // Extract the log ID from the URL
-    const activity_id = req.body.activity_id;
-    const activity_date = req.body.activity_date;
-    const activity_notes = req.body.activity_notes;
+    const { activity_id, activity_date, activity_notes } = req.body; // Extract form data
 
-
-            // Update the `baby_log` table with the new values
-            knex('baby_log')
-                .where('log_id', logId)
-                .update({
-                    activity_id: activity_id, // Set the correct activity_id
-                    activity_date: activity_date, // Update the date
-                    activity_notes: activity_notes // Update the notes
-                })
-                .then(() => {
-
-                  knex('baby_log')
-                  .where('log_id', logId)
-                  .first()
-                  .then(log => {
-                    res.redirect(`/babyLog/${log.user_id}`);
-                  })
-                })
-                .catch(error => {
-                    console.error('Error updating log:', error);
-                    res.status(500).send('Internal Server Error');
-                });
+    // Update the `baby_log` table with the new values
+    knex('baby_log')
+        .where('log_id', logId)
+        .update({
+            activity_id, // Use the selected activity_id directly
+            activity_date, // Update the date
+            activity_notes // Update the notes
         })
+        .then(() => {
+            // Redirect back to the main Baby Log page
+            res.redirect('/babyLog');
+        })
+        .catch(error => {
+            console.error('Error updating log:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+app.post('/logout', (req, res) => {
+    res.clearCookie('user_id'); // Clear the user cookie
+    res.redirect('/'); // Redirect to the home page or login page
+  });
 
 //Route to delete log
-app.post("/deleteLog/:log_id", (req, res) => {
-  const log_id = req.params.log_id;  
-
-  knex("baby_log")
-    .where("log_id", log_id)
-    .select("user_id") // We only need the user_id
-    .first() // Get the first (and only) result
-    .then(log => {
-      if (!log) {
-        console.error("Log not found for log_id:", log_id);
-        return res.status(404).json({ error: "Log not found" });
-      }
-
-      //Delete the log
-      return knex("baby_log")
-        .where("log_id", log_id)
-        .del()
-        .then(() => {
-          res.redirect(`/babyLog/${log.user_id}`);
-        });
-    })
-    .catch(err => {
-      console.error("Error deleting Log:", err);
-      res.status(500).json({ error: "Unable to delete the log. Please try again." });
+  //Route to delete log
+  app.post("/deleteLog/:log_id", (req, res) => {
+    const log_id = req.params.log_id;  
+        //Delete the log
+        return knex("baby_log")
+          .where("log_id", log_id)
+          .del()
+          .then(() => {
+            res.redirect(`/babyLog`);
+          })
+      .catch(err => {
+        console.error("Error deleting Log:", err);
+        res.status(500).json({ error: "Unable to delete the log. Please try again." });
     });
-});
+})
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
