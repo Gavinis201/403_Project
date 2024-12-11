@@ -21,10 +21,9 @@ const knex = require("knex") ({
     client : "pg",
     connection : {
         host : process.env.RDS_HOSTNAME || "localhost",
-        user : process.env.RDS_USERNAME || "postgres",
-        password : process.env.RDS_PASSWORD || "Gavin12",
-        database : process.env.RDS_DB_NAME || "baby",
-
+        user : process.env.RDS_USERNAME || "testuser",
+        password : process.env.RDS_PASSWORD || "test",
+        database : process.env.RDS_DB_NAME || "BabyLogs",
         port : process.env.RDS_PORT || 5432,
         // ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
@@ -166,7 +165,7 @@ app.post('/addUser', async (req, res) => {
 
   // checks to see if passwords match
   if (password !== confirm_password) {
-    return res.status(400).render('addUser', { 
+    return res.status(400).render('newUser', { 
       user: {  
         username
       },
@@ -200,7 +199,7 @@ app.post('/addUser', async (req, res) => {
     res.redirect('/babyLog');
   } catch (error) {
     console.error("Error adding user:", error);
-    res.status(500).render('addUser', { 
+    res.status(500).render('newUser', { 
       user: { username }, 
       error: "There was an error creating your account. Please try again.", 
       formSubmitted: true 
@@ -210,29 +209,37 @@ app.post('/addUser', async (req, res) => {
 
 //Route to access baby Log landing page
 app.get('/babyLog', authenticateUser, (req, res) => {
-    const user_id = req.user_id; // Access user_id from the request object
-  
-    knex('baby_log')
-      .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
-      .select(
-        'baby_log.user_id',
-        'baby_log.log_id',
-        'activities.activity_id',
-        'activities.activity_description as activity',
-        'baby_log.activity_date',
-        'baby_log.activity_notes'
-      )
-      .where('baby_log.user_id', user_id) // Fetch logs for the authenticated user
-      .orderBy('baby_log.activity_date', 'asc')
-      .then(logs => {
-        res.render('babyLog', { logs });
-      })
-      .catch(error => {
-        console.error('Error fetching logs:', error);
-        res.status(500).send('Internal Server Error');
-      });
-  });  
-  
+    const user_id = req.user_id;
+    const activityFilter = req.query.activity || ''; // Get the activity filter from the query parameter, default to an empty string if not provided
+
+    let query = knex('baby_log')
+        .join('activities', 'baby_log.activity_id', '=', 'activities.activity_id')
+        .select(
+            'baby_log.user_id',
+            'baby_log.log_id',
+            'activities.activity_id',
+            'activities.activity_description as activity',
+            'baby_log.activity_date',
+            'baby_log.activity_notes'
+        )
+        .where('baby_log.user_id', user_id);
+
+    if (activityFilter) {
+        query = query.andWhere('activities.activity_description', activityFilter);
+    }
+
+    query.orderBy('baby_log.activity_date', 'asc')
+        .then(logs => {
+            // Fetch distinct activities for the filter dropdown
+            return knex('activities').distinct('activity_description').then(activities => {
+                res.render('babyLog', { logs, activities, selectedActivity: activityFilter });
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching logs:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
 
 app.get('/editLog/:id', authenticateUser, (req, res) => {
     const logId = req.params.id;
