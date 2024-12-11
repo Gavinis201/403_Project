@@ -17,7 +17,6 @@
         }
 
         header {
-            background: #0073e6;
             color: #fff;
             padding: 1.5rem 0;
             text-align: center;
@@ -58,8 +57,26 @@
             background-color: #f9f9f9;
         }
 
+        textarea {
+            width: 100%; /* Make it fill the available width */
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 1px solid #ddd; /* Border similar to input fields */
+            border-radius: 5px;
+            background-color: #f9f9f9; /* Same background color as input fields */
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+            transition: border-color 0.3s ease;
+            resize: vertical; /* Allow vertical resizing only */
+            margin-top: 0.5rem;
+        }
+
+        textarea:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+
         button {
-            background: #0073e6;
+            background: #4a90e2;
             color: #fff;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -75,7 +92,7 @@
         footer {
             text-align: center;
             padding: 1rem;
-            background: #0073e6;
+            background: #4a90e2;
             color: #fff;
             margin-top: 2rem;
             font-size: 0.9rem;
@@ -84,9 +101,17 @@
 </head>
 <body>
     <header>
-        <h1>Edit Log</h1>
+        <div class="header-content">
+            <div class="logo">
+                <h1><a href="/" style="text-decoration: none; color:  white;">Baby Health Tracker</a></h1>
+            </div><br>
+            <div class="button-group">
+                <a href="/" class="btn">Log Out</a>
+                </div>
+        </div>
     </header>
     <main>
+        <h1 style="padding-bottom: 10px;">Edit Record</h1>
         <form action="/editLog/<%= log.log_id %>" method="POST">
             <div class="form-group">
                 <label for="activity_description">Activity:</label>
@@ -100,20 +125,21 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="padding-bottom: 20px;">
                 <label for="activity_date">Date:</label>
-                <input type="date" id="activity_date" name="activity_date" value="<%= log.activity_date %>" required>
+                <input type="date" id="activity_date" name="activity_date" value="<%= new Date(log.activity_date).toISOString().slice(0, 10) %>" required>
             </div>
 
             <div class="form-group">
                 <label for="activity_notes">Notes:</label>
-                <input type="text" id="activity_notes" name="activity_notes" value="<%= log.activity_notes %>" required>
+                <textarea id="activity_notes" name="activity_notes" value="<%= log.activity_notes %>" required></textarea>
             </div>
 
             <button type="submit">Save Changes</button>
         </form>
 
-        <a href="/babyLog" style="display: inline-block; margin-top: 1rem;">Cancel</a>
+        <a href="/babyLog" style="display: block; margin: 1rem auto; text-align: center; text-decoration: none;">Cancel</a>
+
     </main>
 
     <footer>
