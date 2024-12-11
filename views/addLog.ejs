@@ -137,6 +137,7 @@ textarea:focus {
             <div class="form-group">
                 <label for="activity">Activity:</label>
                 <select id="activity" name="activity" required>
+                    <option value="" disabled selected>Select an Activity</option>
                     <% activity_types.forEach(type => { %>
                         <option value="<%= type.activity_id %>"><%= type.activity_description %></option>
                     <% }) %>
