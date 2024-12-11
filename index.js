@@ -94,7 +94,7 @@ app.post('/login', async (req, res) => {
 
 
 // Route to populate add Log dropdown
-app.get('/addLog', (req, res) => {
+app.get('/addLog', authenticateUser, (req, res) => {
     const { success } = req.query; 
     const user_id = req.cookies.user_id;
     // Fetch types to populate the dropdown
@@ -119,7 +119,7 @@ app.get('/addLog', (req, res) => {
 });
 
   // Route to Add new Log
-  app.post('/addLog', (req, res) => {
+  app.post('/addLog', authenticateUser, (req, res) => {
     // Extract form values from req.body
     const activity_id = req.body.activity_id; 
     const activity_date = req.body.activity_date; 
@@ -215,7 +215,7 @@ app.get('/babyLog', authenticateUser, (req, res) => {
   });  
   
 
-app.get('/editLog/:id', (req, res) => {
+app.get('/editLog/:id', authenticateUser, (req, res) => {
     const logId = req.params.id;
 
     // Fetch log data for the provided logId
@@ -244,7 +244,7 @@ app.get('/editLog/:id', (req, res) => {
     });
 });
 
-app.post('/editLog/:id', (req, res) => {
+app.post('/editLog/:id', authenticateUser, (req, res) => {
     const logId = req.params.id; // Extract the log ID from the URL
     const { activity_id, activity_date, activity_notes } = req.body; // Extract form data
 
@@ -274,7 +274,7 @@ app.post('/logout', (req, res) => {
 
 //Route to delete log
   //Route to delete log
-  app.post("/deleteLog/:log_id", (req, res) => {
+  app.post("/deleteLog/:log_id", authenticateUser, (req, res) => {
     const log_id = req.params.log_id;  
         //Delete the log
         return knex("baby_log")
