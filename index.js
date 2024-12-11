@@ -156,40 +156,59 @@ app.get('/addLog', authenticateUser, (req, res) => {
   });
 
 // Route to Create new user
-  app.post('/addUser', async (req, res) => {
-    const username = req.body.username;
-    const acc_first_name = req.body.acc_first_name;
-    const acc_last_name  = req.body.acc_last_name ;
-    const baby_name  = req.body.baby_name ;
-    const password = req.body.password
-    const confirm_password = req.body.confirm_password
+app.post('/addUser', async (req, res) => {
+  const username = req.body.username;
+  const acc_first_name = req.body.acc_first_name;
+  const acc_last_name  = req.body.acc_last_name ;
+  const baby_name  = req.body.baby_name ;
+  const password = req.body.password
+  const confirm_password = req.body.confirm_password
 
-    // checks to see if passwords match
-    if (password !== confirm_password) {
-      return res.status(400).render('newUser', { 
-        user: {  
-          username
-        },
-        error: "Passwords do not match. Please try again.",
-        formSubmitted: true
-      });
-    }
+  // checks to see if passwords match
+  if (password !== confirm_password) {
+    return res.status(400).render('newUser', { 
+      user: {  
+        username
+      },
+      error: "Passwords do not match. Please try again.",
+      formSubmitted: true
+    });
+  }
 
-    // adds the new user record to the database
+  try {
+    // Insert the new user record
     await knex('accounts').insert({ 
-      username: username, 
-      acc_first_name: acc_first_name,
-      acc_last_name : acc_last_name ,
-      baby_name : baby_name ,
-      password: password })
-      .then(() => {
-    res.redirect('/')
-    })
-    .catch (error => {
-        console.error("Error adding user:", error);
-  })
+      username, 
+      acc_first_name,
+      acc_last_name,
+      baby_name,
+      password 
+    });
+  
+    // Retrieve the newly created user from the database
+    const user = await knex('accounts')
+      .select('*')
+      .where({ username })
+      .first();
+  
+    if (!user) {
+      throw new Error('User not found after creation.');
+    }
+  
+    // Store user information in a cookie and redirect
+    res.cookie('user_id', user.user_id, { httpOnly: true, maxAge: 3600000 }); // 1-hour expiration
+    res.redirect('/babyLog');
+  } catch (error) {
+    console.error("Error adding user:", error);
+    res.status(500).render('newUser', { 
+      user: { username }, 
+      error: "There was an error creating your account. Please try again.", 
+      formSubmitted: true 
+    });
+  }
 });
 
+//Route to access baby Log landing page
 app.get('/babyLog', authenticateUser, (req, res) => {
     const user_id = req.user_id; // Access user_id from the request object
   
