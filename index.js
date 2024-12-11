@@ -66,7 +66,7 @@ app.post('/login', async (req, res) => {
     if (password === user.password) {
       // Passwords match
       console.log('Login was successful');
-      return res.redirect('/view');
+      return res.redirect('/babyLog');
     } else {
       // Passwords don't match
       console.log('Password does not match user', username);
