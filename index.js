@@ -4,7 +4,9 @@ let app = express();
 
 let path = require("path");
 
-const port = 3000;
+
+const port = process.env.PORT || 3000;
+
 
 app.set("view engine", "ejs");
 
@@ -18,11 +20,12 @@ app.use(express.static(path.join(__dirname, "public") ));
 const knex = require("knex") ({
     client : "pg",
     connection : {
-        host : "localhost",
-        user : "testuser",
-        password : "test",
-        database : "assignment3a",
-        port : 5432
+        host : process.env.RDS_HOSTNAME || "localhost",
+        user : process.env.RDS_USERNAME || "testuser",
+        password : process.env.RDS_PASSWORD || "test",
+        database : process.env.RDS_DB_NAME || "assignment 3a",
+        port : process.env.RDS_PORT || 5432,
+        ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
     }
 })
 
@@ -35,5 +38,85 @@ app.get("/login", (req, res) => {
     res.render("login");
 });
 
+
+// Route to populate add Log dropdown
+app.get('/addLog', (req, res) => {
+    const { success } = req.query; 
+    // Fetch types to populate the dropdown
+    knex('activities')
+      .select('activity_id', 'activity_description')
+      .then(activity_types => {
+            // Render the add form with the activity type
+            res.render('addLog', { activity_types });
+        })
+
+        .catch(error => {
+            console.error('Error fetching activity types:', error);
+            res.status(500).send('Internal Server Error');
+    });
+});
+
+  // Route to Add new Log
+app.post('/addLog', (req, res) => {
+    // Extract form values from req.body
+    const activity_id  = req.body.activity_id ; // Default to empty string if not provided; 
+    const activity_date  = req.body.activity_date ; 
+    const activity_notes  = req.body.notactivity_notes || ''; // Default to empty string if not provided
+  
+    // Insert the new volunteer into the database
+    knex('baby_log')
+      .insert({
+       activity_id,
+       activity_date,
+       activity_notes 
+      })
+      .then(() => {
+          res.redirect('/viewbabyLog'); // Redirect to the Home view page after adding
+      })
+      .catch(error => {
+          console.error('Error adding Log', error);
+          res.status(500).send('Internal Server Error');
+      });
+ });
+
+ // Route to new user
+ app.get('/addUser', (req, res) => {
+    res.render('addUser', {error: "Passwords do not match. Please try again.", formSubmitted: false});
+  });
+
+// Route to Create new user
+  app.post('/addUser', async (req, res) => {
+    const username = req.body.username;
+    const acc_first_name = req.body.acc_first_name;
+    const acc_last_name  = req.body.acc_last_name ;
+    const baby_name  = req.body.baby_name ;
+    const password = req.body.password
+    const confirm_password = req.body.confirm_password
+
+    // checks to see if passwords match
+    if (password !== confirm_password) {
+      return res.status(400).render('newUser', { 
+        user: {  
+          username
+        },
+        error: "Passwords do not match. Please try again.",
+        formSubmitted: true
+      });
+    }
+
+    // adds the new user record to the database
+    await knex('accounts').insert({ 
+      username: username, 
+      acc_first_name: acc_first_name,
+      acc_last_name : acc_last_name ,
+      baby_name : baby_name ,
+      password: password })
+      .then(() => {
+    res.redirect('/landing_page')
+    })
+    .catch (error => {
+        console.error("Error adding user:", error);
+  })
+});
 
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
