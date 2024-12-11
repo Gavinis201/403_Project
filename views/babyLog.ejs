@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Log</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* General Reset */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            color: #333;
+        }
+
+        header {
+            background: #0073e6;
+            color: #fff;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+        }
+
+        table th {
+            background: #0073e6;
+            color: #fff;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        table tr:hover {
+            background: #f1f1f1;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        button {
+            background: #0073e6;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background: #005bb5;
+        }
+
+        button.delete {
+            background: #e60023;
+        }
+
+        button.delete:hover {
+            background: #c2001b;
+        }
+
+        .add-button {
+            display: inline-block;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .add-button button {
+            background: #28a745;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: #0073e6;
+            color: #fff;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Baby Log</h1>
+    </header>
+    <main>
+        <!-- Display Logs -->
+        <% if (logs && logs.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Date</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% logs.forEach((log) => { %>
+                        <tr>
+                            <td><%= log.activity %></td>
+                            <td><%= log.activity_date %></td>
+                            <td><%= log.activity_notes %></td>
+                            <td>
+                                <div class="button-container">
+                                    <!-- Delete Button -->
+                                    <form action="/deleteLog" method="POST" style="display:inline;">
+                                        <button type="submit" class="delete">Delete</button>
+                                    </form>
+                                    <!-- Edit Button -->
+                                    <form action="/editLog/<%= log.log_id %>" method="GET" style="display:inline;">
+                                        <button type="submit">Edit</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            <!-- Add Button -->
+            <div class="add-button">
+                <form action="/addLog" method="GET">
+                    <button type="submit">Add a Log</button>
+                </form>
+            </div>
+        <% } else { %>
+            <p>No logs available. Start by adding a new log!</p>
+            <div class="add-button">
+                <form action="/addLog" method="GET">
+                    <button type="submit">Add a Log</button>
+                </form>
+            </div>
+        <% } %>
+    </main>
+    <footer>
+        <p>&copy; 2024 Baby Tracker</p>
+    </footer>
+</body>
+</html>
