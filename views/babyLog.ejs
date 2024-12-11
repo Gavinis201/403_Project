@@ -174,12 +174,32 @@
 
         <div style="margin-bottom: 1rem;">
             <label for="activityFilter">Filter by Activity: </label>
-            <select id="activityFilter" onchange="filterLogs()">
+            <select id="activityFilter" onchange="applyFilters()">
                 <option value="">All Activities</option>
                 <% activities.forEach((activity) => { %>
                     <option value="<%= activity.activity_description %>" <%= selectedActivity === activity.activity_description ? 'selected' : '' %>><%= activity.activity_description %></option>
                 <% }) %>
             </select>
+        
+            <label for="startDate">Start Date: </label>
+            <input type="date" id="startDate" value="<%= startDate || '' %>" onchange="applyFilters()">
+        
+            <label for="endDate">End Date: </label>
+            <input type="date" id="endDate" value="<%= endDate || '' %>" onchange="applyFilters()">
+        
+            <!-- Reset Button -->
+            <!-- Reset Button -->
+            <button onclick="resetFilters()" style="
+            background-color: #ccc; 
+            color: #333; 
+            border: 1px solid #999; 
+            padding: 0.3rem 0.8rem; 
+            border-radius: 4px; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            transition: background-color 0.3s;">
+            Reset
+            </button>
         </div>
 
         <% if (logs && logs.length > 0) { %>
@@ -232,10 +252,23 @@
     </footer>
 
     <script>
-        function filterLogs() {
+        function applyFilters() {
             const activity = document.getElementById('activityFilter').value;
-            window.location.href = `/babyLog?activity=${activity}`;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            const query = new URLSearchParams();
+            if (activity) query.set('activity', activity);
+            if (startDate) query.set('startDate', startDate);
+            if (endDate) query.set('endDate', endDate);
+
+            window.location.href = `/babyLog?${query.toString()}`;
         }
+
+        function resetFilters() {
+            window.location.href = '/babyLog'; // Clear all query parameters
+        }
+
 
         function sortTable(n) {
             var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
