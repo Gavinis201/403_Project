@@ -4,9 +4,7 @@ let app = express();
 
 let path = require("path");
 
-
 const port = process.env.PORT || 3000;
-
 
 app.set("view engine", "ejs");
 
@@ -16,17 +14,18 @@ app.use(express.urlencoded({extended: true}));
 
 app.use(express.static(path.join(__dirname, "public") ));
 
-
 const knex = require("knex") ({
-    client : "pg",
-    connection : {
-        host : process.env.RDS_HOSTNAME || "localhost",
-        user : process.env.RDS_USERNAME || "postgres",
-        password : process.env.RDS_PASSWORD || "Gavin12",
-        database : process.env.RDS_DB_NAME || "baby",
-        port : process.env.RDS_PORT || 5432,
-        // ssl: { rejectUnauthorized: false } // Enable SSL for AWS RDS PostgreSQL
-    }
+
+  client : "pg",
+  connection : {
+      host : "awseb-e-aeawnyqkgk-stack-awsebrdsdatabase-lp5nnwnwi2kf.crqwcg4emp7g.us-east-1.rds.amazonaws.com",
+      user : "ebroot",
+      password : "BabyTracker",
+      database : "BabyHealthTracker",
+      port: 5432,
+      ssl: { rejectUnauthorized: false }
+  }
+
 })
 
 const cookieParser = require('cookie-parser');
