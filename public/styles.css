@@ -21,7 +21,7 @@ body {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding-bottom: 5em;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -139,14 +139,15 @@ nav {
 .login_container{
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
+    height: 72vh;
 
     
 }
 
 .width{
-    width: 50%;
+    width: 40%;
 }
 /* Form Styles */
 form {
