@@ -35,32 +35,32 @@
         <div class="login_container">
 
             <legend>Login</legend>
-            <form action="/" method="GET">
-                <label for="txtUserName">User Name:</label>
-                <input type="text" id="txtUserName" required>
 
-                <label for="txtPassword">Password:</label>
-                <input type="password" id="txtPassword" required>
-                <button type="button" class="button" id="btn" onclick="togglePassword();">Show Password</button>
+            <form action="/login" method="post">
 
-                <button type="submit" class="button" onclick="displayPassword();" >Log In</button>
+                <% if (error) { %>
+                    <p style="color: red;" class="text-danger mt-3"><%= error === 'invalid_credentials' ? 'Invalid username or password' : '' %></p>
+                    <br>
+                <% } %>
+
+                <label for="username">User Name:</label>
+                <input type="text" id="username" name="username" required>
+
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+
+
+
+                <button type="submit" class="button">Submit</button>
+
             </form>
-        <p id="myOutput"></p>
 
         </div>
-        
-        <script>
-            var bShow = false;
 
-            function togglePassword() {
-                if (!bShow) {
-                    bShow = true;
-                    document.getElementById("txtPassword").setAttribute("type", "text");
-                } else {
-                    bShow = false;
-                    document.getElementById("txtPassword").setAttribute("type", "password");
-                }
-            }
-        </script>
+  <footer>
+        <p>&copy; 2023 Baby Health Tracker | Helping parents give the best care</p>
+  </footer>
+
     </body>
 </html>

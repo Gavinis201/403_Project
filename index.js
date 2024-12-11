@@ -37,34 +37,38 @@ app.get("/", (req, res) =>
 app.get("/login", (req, res) => {
   const error = req.query.error;
   security = false;
-  res.render("login", { error });res.render("login");
+  res.render("login", { error });
 });
 
 // Route to login to administrator side
 // Compares username and password
 app.post('/login', async (req, res) => {
-  const { UserName, Password } = req.body;
+  const { username, password } = req.body;
+
+  // Check for missing fields
+  if (!username || !password) {
+    return res.status(400).send('Username and password are required. Why though?');
+  }
 
   try {
     // Fetch the user by username
     const user = await knex('accounts')
       .select('*')
-      .where({ UserName })
+      .where({ username })
       .first(); // Fetch the first matching record
 
     if (!user) {
       // If no matching user is found
-      console.log('No user found with username:', UserName); // Debugging line
+      console.log('No user found with username:', username);
       return res.redirect('/loginPage?error=invalid_credentials');
     }
 
-    if (Password === user.password) {
+    if (password === user.password) {
       // Passwords match
-      security = true;
+      console.log('Login was successful');
       return res.redirect('/view');
     } else {
       // Passwords don't match
-      security = false;
       console.log('Password does not match user', username);
       return res.redirect('/login?error=invalid_credentials');
     }
@@ -75,12 +79,9 @@ app.post('/login', async (req, res) => {
   }
 });
 
+
 // Route to populate add Log dropdown
 app.get('/addLog', (req, res) => {
-    if (security == false) {
-        // Return to Login screen
-        return res.redirect('/login');
-      }
     const { success } = req.query; 
     // Fetch types to populate the dropdown
     knex('activities')
@@ -152,7 +153,7 @@ app.post('/addLog', (req, res) => {
       baby_name : baby_name ,
       password: password })
       .then(() => {
-    res.redirect('/landing_page')
+    res.redirect('/')
     })
     .catch (error => {
         console.error("Error adding user:", error);
