@@ -194,7 +194,7 @@
                     <% logs.forEach((log) => { %>
                         <tr>
                             <td><%= log.activity %></td>
-                            <td><%= log.activity_date %></td>
+                            <td><%= new Date(log.activity_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %></td>
                             <td><%= log.activity_notes %></td>
                             <td>
                                 <div class="button-container">
